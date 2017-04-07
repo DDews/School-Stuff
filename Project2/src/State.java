@@ -1,0 +1,4 @@
+
+public enum State {
+	START, VARIABLE, INTEGER, DECIMAL, STRING
+}

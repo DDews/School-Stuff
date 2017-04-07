@@ -1,0 +1,12 @@
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
+public class CalcLang {
+	public static Lexer lexer;
+	public static void main(String[] args) throws FileNotFoundException {
+		Scanner in = new Scanner(System.in);
+		System.out.print("Enter filename: ");
+		String filename = in.nextLine();
+		lexer = new Lexer(filename);
+	}
+}

@@ -1,0 +1,10 @@
+
+public class Statement extends Token {
+	public Statement() {
+		super(Token.Type.STATEMENT);
+		Token token = CalcLang.getToken();
+		switch (token.type) {
+		
+		}
+	}
+}

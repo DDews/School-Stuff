@@ -1,0 +1,4 @@
+
+public class StringToken extends Token {
+
+}

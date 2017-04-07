@@ -1,0 +1,13 @@
+import java.util.Scanner;
+
+public class main {
+	public static void main(String[] args) {
+		Scanner in = new Scanner(System.in);
+		String line;
+		System.out.print("Path to clj script (Enter to exit): ");
+		while (!(line = in.nextLine()).equals("")) {
+			clojure.main.main(new String[] {"-i","e:\\test.clj"});
+			System.out.print("Path to clj script (Enter to exit): ");
+		}
+	}
+}

@@ -1,0 +1,34 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
+public class Lexer {
+	private StringBuilder readChars;
+	private Scanner file;
+	private Queue<Token> tokens;
+	private String line;
+	private int lineIndex = 0;
+	public Lexer(String filename) throws FileNotFoundException {
+		file = new Scanner(new File(filename));
+		tokens = new LinkedList<Token>();
+		getTokens();
+	}
+	private void getTokens() {
+		
+	}
+	private Token readToken() {
+		Token temp = new Token(Token.Type.EOF);
+		readChars = new StringBuilder();
+		State state = State.START;
+	}
+	private char getSymbol() {
+		if (file.hasNextLine() && (line == null || lineIndex >= line.length())) {
+			line = file.nextLine();
+			lineIndex = 0;
+		} else {
+			return 26;
+		}
+		return line.charAt(lineIndex++);
+	}
+}

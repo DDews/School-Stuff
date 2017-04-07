@@ -1,0 +1,6 @@
+
+public class main {
+	public static void main(String[] args) {
+		clojure.main.legacy_script(new String[] {"e:\\test.clj"});
+	}
+}

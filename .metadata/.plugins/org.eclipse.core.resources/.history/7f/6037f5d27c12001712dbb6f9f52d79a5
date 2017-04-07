@@ -1,0 +1,54 @@
+import java.util.ArrayList;
+
+public class Token {
+	public enum Type {
+		STATEMENTS, STATEMENT,
+		SHOW, MESSAGE, INPUT, NEWLINE, EQUALS,
+		EXPRESSION, PLUS, MINUS,
+		TERM, MULTIPLY, DIVIDE,
+		FACTOR, LPAREN, RPAREN,
+		BIFN, VARIABLE, NUMBER, STRING,
+		EOF
+	}
+	public int line;
+	public Type type;
+	public String string;
+	public double value;
+	ArrayList<Token> children;
+	public Token(Type type, double value, String string) {
+		children = new ArrayList<Token>();
+		this.type = type;
+		this.value = value;
+		this.string = string;
+	}
+	public Token(Type type) {
+		this(type, 0.0, "");
+	}
+	public Token(Type type, int lineNumber) {
+		this(type);
+		this.line = lineNumber;
+	}
+	public Token(Type type, double value) {
+		this(type, value,"");
+	}
+	public Token(Type type, String string) {
+		this(type,0.0,string);
+	}
+	@Override
+	public String toString() {
+		StringBuilder out = new StringBuilder();
+		out.append("[");
+		out.append(type);
+		out.append(": ");
+		out.append(string);
+		out.append(", ");
+		out.append(value);
+		out.append("{");
+		out.append(children);
+		out.append("}]");
+		return out.toString();
+	}
+	public void check(Token token) {
+		if (token.type != Token.Type.NUMBER) throw new IllegalStateException("Expected " + this.type + ", but encountered: " + token);
+	}
+}

@@ -1,0 +1,18 @@
+import java.io.File;
+import java.util.Scanner;
+
+public class main {
+	public static void main(String[] args) {
+		Scanner in = new Scanner(System.in);
+		String line;
+		System.out.print("Path to clj script (Enter to exit): ");
+		while (!(line = in.nextLine()).equals("")) {
+			if (new File(line).exists()) {
+				clojure.main.main(new String[] {"-i",line});
+			} else {
+				clojure.main.main(args);
+			}
+			System.out.print("Path to clj script (Enter to exit): ");
+		}
+	}
+}

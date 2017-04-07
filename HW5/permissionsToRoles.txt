@@ -1,0 +1,4 @@
+R6	write*	F3
+R2	seek	D1
+R8	execute	F1
+R7	read	F3

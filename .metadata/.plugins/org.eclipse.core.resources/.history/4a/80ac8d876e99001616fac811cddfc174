@@ -1,0 +1,79 @@
+package codefights;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+public class codefights {
+	static int[] a;
+	static int[] b;
+	static int[][] ab;
+	static int[] c;
+	public static int champion = Integer.MAX_VALUE;
+	public static void main(String args[]) {
+		a = new int[]{1, 2, 3};
+		b = new int[]{1, 1000, 1000, 3, 2, 1000};
+		c = new int[a.length];
+		int out = closestSequence2(a,b);
+		System.out.println(out);
+	}
+	static int closestSequence2(int[] a, int[] b) {
+	    if (a.length == b.length) { return getDiff(a,b); }
+	     ab = new int[a.length][b.length - a.length + 1];
+	    for (int i = 0; i < a.length; i++)
+	        for (int j = i; j < i + 1 + b.length - a.length; j++)
+	            ab[i][j - i] = Math.abs(a[i] - b[j]);
+	    getDunked(0,0,0);
+	    System.out.println(Arrays.toString(c));
+	    return c[a.length - 1];
+	    /*
+	    int v;
+	    for (int i = 0; i < a.length; i++) {
+	        for (int n = i; n < i + 1 + b.length - a.length; n++) {
+	            if ((v = Math.abs(a[i] - b[n])) < ab[i][n - i]) ab[i][n - i]= v;
+	        }
+	    }
+	    int k = 0, p = 0, u = 0;
+	    getDunked(0,0,0);
+	   for (int i = 0; i < a.length; i++) {
+	        p = Integer.MAX_VALUE;
+	        for (int n = i + u; n < i + 1 + b.length - a.length; n++) {
+	            if (ab[i][n-i] < p) { p = ab[i][n-i]; if (n - i > u) u = n - i; }
+	            System.out.print(ab[i][n - i] + " ");
+	        }
+	        k += p;
+	        System.out.println("\n");
+	    }
+	    return champion;*/
+	}
+	static void getDunked(int i, int n, int passed) {
+		passed += ab[i][n];
+		if (c[i] != 0 && passed + 1 < c[i]) c[i] = passed + 1;
+		if (c[i] != 0 && passed + 1 > c[i]) return;
+		if (n + 1 < 1 + b.length - a.length) getDunked(i,n + 1,passed - ab[i][n]);
+		if (i + 1 < a.length) getDunked(i + 1,n,passed);
+		return;
+	}
+	static void getNum(int indexA, int indexB, int currentNum) {
+	    if (ab[indexA][indexB - indexA] == -1) ab[indexA][indexB - indexA] = Math.abs(a[indexA] - b[indexB]);
+	    int newNum = ab[indexA][indexB - indexA] + currentNum;
+	    if (indexB < indexA + (b.length - a.length)) getNum(indexA,indexB + 1,currentNum);
+	    if (newNum >= champion) {
+	        return;
+	    }
+	    if (indexA == a.length - 1) {
+	        if (newNum < champion) champion = newNum;
+	    }
+	    else if (indexB + 1 < b.length) getNum(indexA + 1,indexB + 1,newNum);
+	    return;
+	}	
+	static int getDiff(int[] a, int[] b) {
+	    int out = 0;
+	    for (int i = 0; i < a.length; i++) {
+	        out += Math.abs(a[i] - b[i]);
+	    }
+	    return out;
+	}
+}

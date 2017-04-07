@@ -1,0 +1,8 @@
+
+public class Variable extends Token {
+	public Variable() {
+		super(Token.Type.VARIABLE, -1);
+		Token token = CalcLang.getToken();
+		check(token);
+	}
+}

@@ -1,0 +1,6 @@
+
+public class main {
+	public static void main(String[] args) {
+		clojure.main.main(new String[] {"-i","e:\\test.clj"});
+	}
+}

@@ -1,0 +1,229 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+
+public class Lexer {
+	private StringBuilder readChars;
+	private Scanner file;
+	private LinkedList<Token> tokens;
+	private String line;
+	private int lineIndex = 0;
+	private int lineNumber = 0;
+	private ArrayList<String> functions;
+	public Lexer(String filename) throws FileNotFoundException {
+		functions = new ArrayList<String>();
+		for (String string : new String[] {"cos","sin","abs","radians","degrees","sqrt"}) {
+			functions.add(string);
+		}
+		file = new Scanner(new File(filename));
+		tokens = new LinkedList<Token>();
+		getTokens();
+	}
+
+	private void getTokens() {
+		Token token;
+		while ((token = readToken()).type != Token.Type.EOF) {
+			tokens.add(token);
+		}
+	}
+
+	private Token readToken() {
+		Token temp = new Token(Token.Type.EOF, lineNumber);
+		readChars = new StringBuilder();
+		State state = State.START;
+		char c;
+		while ((c = getSymbol()) != 26) {
+			System.out.print(c);
+			switch (state) {
+			case START:
+				switch (getType(c)) {
+					case WHITESPACE:
+						break;
+					case OPERATOR:
+						switch(c) {
+							case '+':
+								temp.type = Token.Type.PLUS;
+								return temp;
+							case '-':
+								temp.type = Token.Type.MINUS;
+								return temp;
+							case '*':
+								temp.type = Token.Type.MULTIPLY;
+								return temp;
+							case '/':
+								temp.type = Token.Type.DIVIDE;
+								return temp;
+							case ')':
+								temp.type = Token.Type.RPAREN;
+								return temp;
+							case '(':
+								temp.type = Token.Type.LPAREN;
+							case '=':
+								temp.type = Token.Type.EQUALS;
+								return temp;
+							case '"':
+								state = State.STRING;
+								break;
+							default:
+						}
+						break;
+					case LETTER:
+						state = State.VARIABLE;
+						readChars.append(c);
+						break;
+					case DIGIT:
+						state = State.INTEGER;
+						readChars.append(c);
+						break;
+					default:
+						break;
+				}
+				break;
+			case VARIABLE:
+				switch (getType(c)) {
+					case OPERATOR:
+						lineIndex--;
+					case WHITESPACE:
+						temp.type = Token.Type.VARIABLE;
+						temp.string = readChars.toString();
+						if (functions.contains(temp.string.toLowerCase())) {
+							temp.type = Token.Type.BIFN;
+							return temp;
+						}
+						switch(temp.string.toLowerCase()) {
+							case "MSG":
+								temp.type = Token.Type.MESSAGE;
+								break;
+							case "INPUT":
+								temp.type = Token.Type.INPUT;
+								break;
+							case "SHOW":
+								temp.type = Token.Type.SHOW;
+								break;
+							case "NEWLINE":
+								temp.type = Token.Type.NEWLINE;
+								break;
+						}
+						return temp;
+					case DIGIT:
+					case LETTER:
+						readChars.append(c);
+						break;
+					default:
+						throw new IllegalStateException("In State " + state + ", invalid character at line " + lineNumber + ": " + c);	
+				}
+				break;
+			case INTEGER:
+				switch (getType(c)) {
+					case LETTER:
+					case OPERATOR:
+						if (c == '.') {
+							readChars.append(c);
+							state = State.DECIMAL;
+							break;
+						}
+						lineIndex--;
+					case WHITESPACE:
+						temp.type = Token.Type.NUMBER;
+						temp.value = Integer.parseInt(readChars.toString());
+						return temp;
+					case DIGIT:
+						readChars.append(c);
+						break;
+					default:
+						throw new IllegalStateException("In State " + state + ", invalid character at line " + lineNumber + ": " + c);
+				}
+				break;
+			case DECIMAL:
+				switch (getType(c)) {
+					case LETTER:
+					case OPERATOR:
+						lineIndex--;
+					case WHITESPACE:
+						temp.type = Token.Type.NUMBER;
+						temp.value = Double.parseDouble(readChars.toString());
+						return temp;
+					case DIGIT:
+						readChars.append(c);
+						break;
+					default:
+							throw new IllegalStateException("In State " + state + ", invalid character at line " + lineNumber + ": " + c);
+				}
+				break;
+			case STRING:
+				switch (getType(c)) {
+				case OPERATOR:
+					if (c == '"') {
+						temp.type = Token.Type.STRING;
+						temp.string = readChars.toString();
+						return temp;
+					}
+				default:
+					readChars.append(c);
+					break;
+				}
+				break;
+			default:
+				throw new IllegalStateException("Invalid State " + state);
+			}
+		}
+		return temp;
+	}
+
+	private Symbol getType(char c) {
+		if (Character.isAlphabetic(c))
+			return Symbol.LETTER;
+		if (Character.isDigit(c))
+			return Symbol.DIGIT;
+		if (Character.isWhitespace(c))
+			return Symbol.WHITESPACE;
+		switch (c) {
+			case '-':
+			case '+':
+			case '(':
+			case ')':
+			case '/':
+			case '*':
+			case '"':
+			case '=':
+				return Symbol.OPERATOR;
+			default:
+				return Symbol.ERROR;
+		}
+	}
+
+	private char getSymbol() {
+		if (file.hasNextLine() && (line == null || lineIndex >= line.length())) {
+			lineNumber++;
+			line = file.nextLine() + '\n';
+			lineIndex = 0;
+		} else if (lineIndex >= line.length()){
+			return 26;
+		}
+		return line.charAt(lineIndex++);
+	}
+	public Token getToken() {
+		Token temp;
+		try {
+		temp = tokens.remove();
+		} catch (NoSuchElementException e) {
+			temp = new Token(Token.Type.EOF, lineNumber);
+		}
+		return temp;
+	}
+	public Token peekToken() {
+		Token temp;
+		try {
+		temp = tokens.peekFirst();
+		} catch (NoSuchElementException e) {
+			temp = new Token(Token.Type.EOF, lineNumber);
+		}
+		return temp;
+	}
+	public void putBackToken(Token token) {
+		tokens.offerFirst(token);
+	}
+}

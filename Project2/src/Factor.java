@@ -1,0 +1,34 @@
+
+public class Factor extends Token {
+	public Factor() {
+		super(Token.Type.FACTOR);
+		Token token = CalcLang.peekToken();
+		this.line = token.line;
+		this.lineIndex = token.lineIndex;
+		switch (token.type) {
+			case NUMBER:
+				this.children.add(CalcLang.getToken());
+				break;
+			case VARIABLE:
+				this.children.add(new Variable());
+				break;
+			case MINUS:
+				this.children.add(CalcLang.getToken());
+				this.children.add(new Factor());
+				break;
+			case BIFN:
+				this.children.add(new BIFN());
+				this.children.add(new LParen());
+				this.children.add(new Expression());
+				this.children.add(new RParen());
+				break;
+			case LPAREN:
+				this.children.add(CalcLang.getToken());
+				this.children.add(new Expression());
+				this.children.add(new RParen());
+				break;
+			default:
+				check(token);
+		}
+	}
+}

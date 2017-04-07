@@ -1,0 +1,2 @@
+eclipse.preferences.version=1
+prefWatchExpressions=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?>\r\n<watchExpressions>\r\n<expression enabled\="true" text\="children"/>\r\n<expression enabled\="true" text\="c"/>\r\n<expression enabled\="true" text\="lineIndex"/>\r\n<expression enabled\="true" text\="token"/>\r\n<expression enabled\="true" text\="next"/>\r\n<expression enabled\="true" text\="lineNumber"/>\r\n<expression enabled\="true" text\="n"/>\r\n</watchExpressions>\r\n
