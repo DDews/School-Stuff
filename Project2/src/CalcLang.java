@@ -1,21 +1,6 @@
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.geom.Rectangle2D;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
-import org.abego.treelayout.NodeExtentProvider;
-import org.abego.treelayout.TreeForTreeLayout;
-import org.abego.treelayout.TreeLayout;
-import org.abego.treelayout.util.DefaultConfiguration;
-import org.abego.treelayout.util.DefaultTreeForTreeLayout;
 
 
 public class CalcLang {
@@ -38,8 +23,6 @@ public class CalcLang {
 		lexer = new Lexer(filename);
 		head = new Statements();
 		execute(head);
-		CalcLang lang = new CalcLang();
-		lang.showTree();
 	}
 	public static double execute(Token token) {
 		switch(token.type) {
@@ -145,152 +128,6 @@ public class CalcLang {
 		variable.add(0.0);
 		return 0.0;
 	}
-	public void showTree() {
-		DefaultTreeForTreeLayout<Token> tree = new DefaultTreeForTreeLayout<Token>(head);
-        addChildren(tree,head);
-        DefaultConfiguration<Token> configuration = new DefaultConfiguration<Token>(
-                20,
-                20);
-        NodeExtentProvider<Token> nodeExtentProvider = new TokenExtentProvider();
-        TreeLayout<Token> treeLayout = new TreeLayout<Token>(
-                tree,
-                nodeExtentProvider,
-                configuration);
-        ParseTreePanel treePanel = new ParseTreePanel(treeLayout);
-
-        JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JScrollPane jscroll = new JScrollPane(treePanel);
-        frame.getContentPane().add(jscroll);
-        frame.pack();
-        frame.setVisible(true);
-        frame.toFront();
-        frame.setAlwaysOnTop(true);
-        frame.setAlwaysOnTop(false);
-	}
-	public static void addChildren(DefaultTreeForTreeLayout tree, Token token) {
-		for (Token child : token.children) {
-			tree.addChild(token, child);
-			addChildren(tree,child);
-		}
-	}
-	class TokenExtentProvider implements NodeExtentProvider<Token> {
-
-        public double getWidth(Token treeNode) {
-            return 100;
-        }
-
-        public double getHeight(Token treeNode) {
-            return 20;
-        }
-    };
-	class ParseTreePanel extends JPanel {
-        private TreeLayout<Token> treeLayout;
-
-        private final static int ARC_SIZE = 10;
-        private final Color ROOT_COLOR = Color.orange;
-        private final Color AGREE_COLOR = Color.green;
-        private final Color DISAGREE_COLOR = Color.red;
-        private final Color BORDER_COLOR = Color.darkGray;
-        private final Color TEXT_COLOR = Color.black;
-
-        public ParseTreePanel(TreeLayout<Token> treeLayout) {
-            setTreeLayout(treeLayout);
-        }
-        
-        public void updateTreeLayout() {
-            TreeLayout<Token> newTreeLayout = new TreeLayout<Token>(
-                    treeLayout.getTree(),
-                    treeLayout.getNodeExtentProvider(),
-                    treeLayout.getConfiguration());
-            setTreeLayout(newTreeLayout);
-        }
-
-        private void setTreeLayout(TreeLayout<Token> treeLayout) {
-            this.treeLayout = treeLayout;
-
-            Dimension size = treeLayout.getBounds().getBounds().getSize();
-            setPreferredSize(size);
-        }
-        private TreeForTreeLayout<Token> getTree() {
-            return treeLayout.getTree();
-        }
-
-        private Iterable<Token> getChildren(Token parent) {
-            return getTree().getChildren(parent);
-        }
-
-        private Rectangle2D.Double getBoundsOfNode(Token node) {
-            return treeLayout.getNodeBounds().get(node);
-        }
-
-        private void paintEdges(Graphics g, Token parent) {
-            if (!getTree().isLeaf(parent)) {
-                Rectangle2D.Double b1 = getBoundsOfNode(parent);
-                double x1 = b1.getCenterX();
-                double y1 = b1.getCenterY();
-                for (Token child : getChildren(parent)) {
-                    Rectangle2D.Double b2 = getBoundsOfNode(child);
-                    g.drawLine(
-                            (int) x1,
-                            (int) y1,
-                            (int) b2.getCenterX(),
-                            (int) b2.getCenterY());
-
-                    paintEdges(g, child);
-                }
-            }
-        }
-
-        private void paintBox(Graphics g, Token argNode) {
-            // draw the box in the background
-
-            if (argNode instanceof Statements) {
-                g.setColor(Color.orange);
-            } else if (argNode instanceof Statement) {
-                g.setColor(Color.green);
-            } else if (argNode instanceof Expression) {
-                g.setColor(Color.red);
-            } else g.setColor(Color.white);
-
-            Rectangle2D.Double box = getBoundsOfNode(argNode);
-            g.fillRoundRect(
-                    (int) box.x,
-                    (int) box.y,
-                    (int) box.width - 1,
-                    (int) box.height - 1,
-                    ARC_SIZE,
-                    ARC_SIZE);
-            g.setColor(BORDER_COLOR);
-            g.drawRoundRect(
-                    (int) box.x,
-                    (int) box.y,
-                    (int) box.width - 1,
-                    (int) box.height - 1,
-                    ARC_SIZE,
-                    ARC_SIZE);
-
-            // draw the text on top of the box (possibly multiple lines)
-            g.setColor(TEXT_COLOR);
-            String line = argNode.type.toString() + ": " + (argNode.string.equals("") ? (argNode.value == 0.0 ? "" : Double.toString(argNode.value)) : argNode.string);
-            FontMetrics m = getFontMetrics(getFont());
-            int x = (int) box.x + ARC_SIZE / 2;
-            int y = (int) box.y + m.getAscent() + m.getLeading() + 1;
-            g.drawString(line, x, y);
-        }
-
-        @Override
-        public void paint(Graphics g) {
-            super.paint(g);
-
-            paintEdges(g, getTree().getRoot());
-
-            // paint the boxes
-            for (Token argNode : treeLayout.getNodeBounds().keySet()) {
-                paintBox(g, argNode);
-            }
-        }
-    }
 	public static Token getToken() {
 		return lexer.getToken();
 	}

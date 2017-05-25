@@ -189,6 +189,7 @@ public class Lexer {
 		if (Character.isWhitespace(c))
 			return Symbol.WHITESPACE;
 		switch (c) {
+			case '.':
 			case '-':
 			case '+':
 			case '(':

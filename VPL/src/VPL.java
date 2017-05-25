@@ -136,9 +136,8 @@ public class VPL {
 		int L = 0;
 		Scanner in = new Scanner(System.in);
 		boolean cont = true;
-		//printMem();
 		do {
-
+			//printMem();
 			int op = mem[ip];
 			int a = mem[ip + 1];
 			int b = mem[ip + 2];
@@ -299,7 +298,6 @@ public class VPL {
 				ip += 1;
 			}
 			numInstructions++;
-			//printMem();
 		} while (cont);// end of the fetch-execute loop
 
 	}// main

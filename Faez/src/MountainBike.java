@@ -1,5 +1,5 @@
 
-public class MountainBike extends Bicycle {
+public class MountainBike extends DanDews_S_09_Calc {
 
 	public MountainBike(int nothing) {
 		super(nothing);
